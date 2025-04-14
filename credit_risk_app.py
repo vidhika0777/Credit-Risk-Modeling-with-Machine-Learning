@@ -14,110 +14,124 @@ import streamlit as st
 sns.set(style="whitegrid")
 
 # Section 1: Data Generation
+# Simulate data with additional features like DTI (Debt-to-Income Ratio), LTV (Loan-to-Value Ratio)
 def generate_data(num_samples=1000):
     np.random.seed(42)
+    avg_income = np.random.normal(40000, 10000, num_samples)  # Monthly income (INR)
+    existing_debt = np.random.normal(20000, 5000, num_samples)  # Existing debt (INR)
+    loan_amount = np.random.normal(50000, 15000, num_samples)  # Loan amount (INR)
+    esg_score = np.random.uniform(40, 80, num_samples)  # ESG score
+
+    # Calculate DTI and LTV
+    dti = existing_debt / avg_income
+    ltv = loan_amount / (avg_income * 12)  # Assuming yearly income
+
+    # Define default based on thresholds
+    default = (dti > 0.4) | (ltv > 0.8)  # Arbitrary thresholds for demonstration
+
     data = pd.DataFrame({
-        'avg_income': np.random.normal(40000, 10000, num_samples),  # Monthly income (INR)
-        'existing_debt': np.random.normal(20000, 5000, num_samples),  # Existing debt (INR)
-        'loan_amount': np.random.normal(50000, 15000, num_samples),  # Loan amount (INR)
-        'esg_score': np.random.uniform(40, 80, num_samples),  # ESG score (from 0 to 100)
-        'num_bounced_payments': np.random.poisson(1, num_samples),  # Number of bounced payments
-        'loan_default': np.random.binomial(1, 0.2, num_samples)  # Loan default (0 or 1)
+        'avg_income': avg_income,
+        'existing_debt': existing_debt,
+        'loan_amount': loan_amount,
+        'esg_score': esg_score,
+        'dti': dti,
+        'ltv': ltv,
+        'default': default.astype(int)
     })
-    data['dti'] = data['existing_debt'] / data['avg_income']  # Debt-to-Income Ratio
-    data['ltv'] = data['loan_amount'] / (data['avg_income'] * 12)  # Loan-to-Value Ratio
+
     return data
 
-# Section 2: Exploratory Data Analysis (EDA)
-def perform_eda(data):
-    st.title("Exploratory Data Analysis")
-    
-    # Histograms
-    st.subheader("Histograms")
-    fig, axs = plt.subplots(2, 3, figsize=(15, 10))
-    sns.histplot(data['avg_income'], kde=True, ax=axs[0, 0]).set_title('Average Income')
-    sns.histplot(data['existing_debt'], kde=True, ax=axs[0, 1]).set_title('Existing Debt')
-    sns.histplot(data['loan_amount'], kde=True, ax=axs[0, 2]).set_title('Loan Amount')
-    sns.histplot(data['esg_score'], kde=True, ax=axs[1, 0]).set_title('ESG Score')
-    sns.histplot(data['num_bounced_payments'], kde=True, ax=axs[1, 1]).set_title('Number of Bounced Payments')
-    sns.histplot(data['loan_default'], kde=True, ax=axs[1, 2]).set_title('Loan Default')
-    st.pyplot(fig)
-    
-    # Correlation Heatmap
-    st.subheader("Correlation Heatmap")
-    corr = data.corr()
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
-    st.pyplot(fig)
-
-# Section 3: Model Training
+# Section 2: Model Training
 def train_model(data):
-    st.title("Model Training")
-    
-    # Split the data
-    X = data.drop('loan_default', axis=1)
-    y = data['loan_default']
+    features = ['avg_income', 'existing_debt', 'loan_amount', 'esg_score', 'dti', 'ltv']
+    target = 'default'
+
+    X = data[features]
+    y = data[target]
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-    
-    # Train the model
+
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
-    
-    # Evaluate the model
+
     y_pred = model.predict(X_test)
     y_pred_proba = model.predict_proba(X_test)[:, 1]
-    st.text("Classification Report:")
-    st.text(classification_report(y_test, y_pred))
-    st.text(f"ROC AUC Score: {roc_auc_score(y_test, y_pred_proba):.2f}")
-    st.text(f"Accuracy Score: {accuracy_score(y_test, y_pred):.2f}")
-    
-    # Confusion Matrix
-    st.subheader("Confusion Matrix")
-    cm = confusion_matrix(y_test, y_pred)
-    fig, ax = plt.subplots()
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-    ax.set_xlabel('Predicted')
-    ax.set_ylabel('Actual')
-    st.pyplot(fig)
-    
-    return model, X_test
 
-# Section 4: Streamlit Application
+    return model, X_test, y_test, y_pred, y_pred_proba
+
+# Section 3: Model Evaluation
+def evaluate_model(y_test, y_pred, y_pred_proba):
+    accuracy = accuracy_score(y_test, y_pred)
+    roc_auc = roc_auc_score(y_test, y_pred_proba)
+    report = classification_report(y_test, y_pred)
+    cm = confusion_matrix(y_test, y_pred)
+
+    return accuracy, roc_auc, report, cm
+
+# Section 4: Streamlit App
 def main():
-    data = generate_data()
-    st.sidebar.title("Loan Risk Analysis")
-    
-    if st.sidebar.checkbox("Show Raw Data"):
-        st.subheader("Raw Data")
-        st.write(data)
-    
-    if st.sidebar.checkbox("Perform EDA"):
-        perform_eda(data)
-    
-    if st.sidebar.checkbox("Train Model"):
-        model, X_test = train_model(data)
-    
-    st.sidebar.title("Predict Loan Risk")
-    avg_income = st.sidebar.slider("Average Income", 10000, 100000, 40000)
-    existing_debt = st.sidebar.slider("Existing Debt", 5000, 50000, 20000)
-    loan_amount = st.sidebar.slider("Loan Amount", 10000, 100000, 50000)
-    esg_score = st.sidebar.slider("ESG Score", 0, 100, 60)
-    num_bounced_payments = st.sidebar.slider("Number of Bounced Payments", 0, 10, 1)
-    
-    if st.sidebar.button("Predict"):
-        input_data = pd.DataFrame({
-            'avg_income': [avg_income],
-            'existing_debt': [existing_debt],
-            'loan_amount': [loan_amount],
-            'esg_score': [esg_score],
-            'num_bounced_payments': [num_bounced_payments],
-            'dti': [existing_debt / avg_income],
-            'ltv': [loan_amount / (avg_income * 12)]
-        })
-        prediction = model.predict(input_data)[0]
-        st.subheader("Prediction")
-        st.write("Loan Default" if prediction == 1 else "No Loan Default")
-    
+    st.title("Loan Default Prediction")
+
+    # Generate data
+    num_samples = st.sidebar.slider("Number of samples", 100, 10000, 1000)
+    data = generate_data(num_samples)
+
+    st.write("### Generated Data")
+    st.write(data.head())
+
+    # Train model
+    model, X_test, y_test, y_pred, y_pred_proba = train_model(data)
+
+    # Evaluate model
+    accuracy, roc_auc, report, cm = evaluate_model(y_test, y_pred, y_pred_proba)
+
+    st.write("### Model Evaluation")
+    st.write(f"Accuracy: {accuracy:.2f}")
+    st.write(f"ROC AUC Score: {roc_auc:.2f}")
+    st.write("Classification Report:")
+    st.text(report)
+    st.write("Confusion Matrix:")
+    st.write(cm)
+
+    # Feature importance
+    feature_importance = pd.DataFrame({
+        'feature': X_test.columns,
+        'importance': model.feature_importances_
+    }).sort_values(by='importance', ascending=False)
+
+    st.write("### Feature Importance")
+    st.bar_chart(feature_importance.set_index('feature'))
+
+    # User input for prediction
+    st.write("### Predict Loan Default")
+    avg_income = st.number_input("Average Income (INR)", value=40000)
+    existing_debt = st.number_input("Existing Debt (INR)", value=20000)
+    loan_amount = st.number_input("Loan Amount (INR)", value=50000)
+    esg_score = st.number_input("ESG Score", value=60)
+
+    # Calculate DTI and LTV for user input
+    dti = existing_debt / avg_income
+    ltv = loan_amount / (avg_income * 12)
+
+    user_data = pd.DataFrame({
+        'avg_income': [avg_income],
+        'existing_debt': [existing_debt],
+        'loan_amount': [loan_amount],
+        'esg_score': [esg_score],
+        'dti': [dti],
+        'ltv': [ltv]
+    })
+
+    st.write("User Data:")
+    st.write(user_data)
+
+    if st.button("Predict"):
+        user_pred = model.predict(user_data)
+        user_pred_proba = model.predict_proba(user_data)[:, 1]
+
+        st.write(f"Prediction: {'Default' if user_pred[0] == 1 else 'No Default'}")
+        st.write(f"Prediction Probability: {user_pred_proba[0]:.2f}")
+
 if __name__ == "__main__":
     main()
 
