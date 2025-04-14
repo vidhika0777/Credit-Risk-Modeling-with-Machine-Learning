@@ -44,10 +44,7 @@
 
 ## 🚀 Try the App
 
-👉 [Launch Streamlit App](https://your-streamlit-url.streamlit.app)  
-*Replace this with your actual link after deployment*
-
----
+👉 [Launch Streamlit App](https://credit-risk-modeling-with-machine-learning-grgutkrbtuptgpaappq.streamlit.app/)---
 
 ## 🛠️ How to Run Locally
 
