@@ -6,7 +6,7 @@
 ## 📌 Project Overview
 
 - A simple, interactive **credit scoring model** to predict loan defaults  
-- Built using **Python**, **Streamlit**, **Scikit-learn**, and **SHAP**  
+- Built using **Python**, **Streamlit** and **Scikit-learn** 
 - Simulates borrower data based on **Indian financial context**  
 - Real-time loan risk predictions based on user input
 
@@ -16,7 +16,6 @@
 
 - 📊 Interactive EDA (Histograms + Correlation Heatmaps)  
 - 🤖 Trains a **Random Forest Classifier** to predict default  
-- 🔍 Model explainability using **SHAP visualizations**  
 - 🧮 Real-time prediction with metrics like **DTI** and **LTV**  
 - 🌱 Includes **ESG score** as a unique input feature  
 
@@ -28,7 +27,7 @@
 - **Libraries:**  
   - Data: `pandas`, `numpy`  
   - Modeling: `scikit-learn`  
-  - Visualization: `matplotlib`, `seaborn`, `shap`  
+  - Visualization: `matplotlib`, `seaborn`
   - App Interface: `streamlit`
 
 ---
