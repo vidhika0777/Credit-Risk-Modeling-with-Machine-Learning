@@ -7,14 +7,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, roc_auc_score
+from sklearn.metrics import classification_report, roc_auc_score, accuracy_score, confusion_matrix
 import streamlit as st
 
-# Set plot style
+# Set plot style for EDA
 sns.set(style="whitegrid")
 
 # Section 1: Data Generation
-# Simulate data with additional features like DTI (Debt-to-Income Ratio), LTV (Loan-to-Value Ratio)
 def generate_data(num_samples=1000):
     np.random.seed(42)
     data = pd.DataFrame({
@@ -70,6 +69,16 @@ def train_model(data):
     st.text("Classification Report:")
     st.text(classification_report(y_test, y_pred))
     st.text(f"ROC AUC Score: {roc_auc_score(y_test, y_pred_proba):.2f}")
+    st.text(f"Accuracy Score: {accuracy_score(y_test, y_pred):.2f}")
+    
+    # Confusion Matrix
+    st.subheader("Confusion Matrix")
+    cm = confusion_matrix(y_test, y_pred)
+    fig, ax = plt.subplots()
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+    ax.set_xlabel('Predicted')
+    ax.set_ylabel('Actual')
+    st.pyplot(fig)
     
     return model, X_test
 
@@ -111,3 +120,6 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+
+
