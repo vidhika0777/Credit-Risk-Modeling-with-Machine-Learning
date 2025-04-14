@@ -43,8 +43,8 @@
 ---
 
 ## 🚀 Try the App
-
-👉 [Launch Streamlit App](https://credit-risk-modeling-with-machine-learning-grgutkrbtuptgpaappq.streamlit.app/)---
+[
+](https://credit-risk-modeling-with-machine-learning-grgutkrbtuptgpaappq.streamlit.app/)
 
 ## 🛠️ How to Run Locally
 
