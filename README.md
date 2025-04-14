@@ -1,15 +1,63 @@
-# Credit-Risk-Modeling-with-Machine-Learning
-This project focuses on building a machine learning model to predict loan defaults using borrower data. The goal is to assess the likelihood of loan default based on factors like income, existing debt, loan amount, and other financial indicators.
-This Streamlit-based web app predicts the likelihood of a borrower defaulting on a loan using a machine learning model trained on synthetic credit data. It includes interactive visualizations, model insights (via SHAP), and user input sliders to simulate new predictions.
+# 🏦 Credit Risk Analyzer  
+**By Vidhika – FRM Level 1 | Finance + Python Enthusiast**
 
-🔍 Key Features:
-Simulated Indian borrower data (income, debt, ESG score, bounced payments, etc.)
-Exploratory Data Analysis (EDA)
-Machine learning model (Random Forest)
-SHAP-based model interpretability
-Custom user prediction interface
-📊 Tech Stack:
-Python, Pandas, Scikit-learn, Matplotlib, Seaborn, SHAP, Streamlit
+---
 
-🚀 Live Demo:
-👉 
+## 📌 Project Overview
+
+- A simple, interactive **credit scoring model** to predict loan defaults  
+- Built using **Python**, **Streamlit**, **Scikit-learn**, and **SHAP**  
+- Simulates borrower data based on **Indian financial context**  
+- Real-time loan risk predictions based on user input
+
+---
+
+## 💡 Features
+
+- 📊 Interactive EDA (Histograms + Correlation Heatmaps)  
+- 🤖 Trains a **Random Forest Classifier** to predict default  
+- 🔍 Model explainability using **SHAP visualizations**  
+- 🧮 Real-time prediction with metrics like **DTI** and **LTV**  
+- 🌱 Includes **ESG score** as a unique input feature  
+
+---
+
+## ⚙️ Tech Stack
+
+- **Languages:** Python  
+- **Libraries:**  
+  - Data: `pandas`, `numpy`  
+  - Modeling: `scikit-learn`  
+  - Visualization: `matplotlib`, `seaborn`, `shap`  
+  - App Interface: `streamlit`
+
+---
+
+## 🧠 Why I Built This
+
+- To apply credit risk modeling concepts from **FRM**  
+- To showcase a real-world **finance + machine learning** use case  
+- To build a **personalized portfolio project** in the Indian context  
+- To practice **model explainability** and **deployment**
+
+---
+
+## 🚀 Try the App
+
+👉 [Launch Streamlit App](https://your-streamlit-url.streamlit.app)  
+*Replace this with your actual link after deployment*
+
+---
+
+## 🛠️ How to Run Locally
+
+```bash
+git clone https://github.com/your-username/credit-risk-analyzer.git
+cd credit-risk-analyzer
+pip install -r requirements.txt
+streamlit run credit_risk_app.py
+📂 Project Structure
+
+├── credit_risk_app.py        # Streamlit application
+├── requirements.txt          # All required libraries
+└── README.md                 # Project description
